@@ -19,7 +19,14 @@ const ContactUs = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch("https://train-depot.onrender.com/api/contact", formData);
+      const response = await fetch("https://train-depot.onrender.com/api/contact", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify(formData),
+});
+
 
 
       if (response.status === 201) {
