@@ -19,13 +19,7 @@ const ContactUs = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch("https://train-depot.onrender.com/api/contact", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify(formData),
-});
+      const response = await axios.post("http://localhost:8080/api/contact", formData);
 
 
 
