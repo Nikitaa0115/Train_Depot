@@ -10,6 +10,6 @@ export default defineConfig({
   preview: {
     port: process.env.PORT || 4173,
     host: true,
-    allowedHosts: ['train-depots-frontend.onrender.com'],
+    allowedHosts: ['train-depot-1.onrender.com'],
   },
 })
