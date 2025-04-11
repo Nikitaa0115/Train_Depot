@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import railwayWashing from "../assets/washingLine.jpeg";
+import railwayWashing from "../assets/WashingLine.jpeg";
 import "./Washingline.css";
 
 const WashingLine = () => {
