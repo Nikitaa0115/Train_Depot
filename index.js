@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 8080;
 const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:5173",
-  "https://train-depot.onrender.com"  // ✅ Added deployed frontend origin
+  "https://train-depot-1.onrender.com"  // ✅ Added deployed frontend origin
 ];
 
 // ✅ Use cors middleware
