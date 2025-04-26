@@ -12,7 +12,7 @@ const DepotDetail = () => {
   useEffect(() => {
     const fetchDepotDetails = async () => {
       try {
-         const res = await fetch(`http://localhost:8080/api/depots/${id}`);
+         const res = await fetch(`https://train-depot.onrender.com/api/depots/${id}`);
 
 
         if (!res.ok) {
