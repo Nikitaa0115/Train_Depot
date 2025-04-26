@@ -1,15 +1,9 @@
-import React, { useEffect, useState } from "react";
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Tooltip,
-  useMap,
-} from "react-leaflet";
+import React, { useEffect, useState } from 'react';
+import { MapContainer, TileLayer, Marker, Tooltip, useMap } from 'react-leaflet';
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { useNavigate } from "react-router-dom";
-import "./Map.css";
+import { useNavigate } from 'react-router-dom';
+import './Map.css';
 
 const customIcon = new L.Icon({
   iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
@@ -39,9 +33,15 @@ const Map = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("VITE_BACKEND_URL =>", import.meta.env.VITE_BACKEND_URL);
+
     const fetchDepots = async () => {
       try {
-        const res = await fetch("http://localhost:8080/api/depots");
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/depots`, {
+          method: 'GET',
+          credentials: 'include'
+        });
+
         if (!res.ok) throw new Error(`Failed to fetch: ${res.status}`);
 
         const data = await res.json();
@@ -53,8 +53,6 @@ const Map = () => {
             typeof depot.location.lat === "number" &&
             typeof depot.location.lng === "number"
         );
-
-        console.log("Valid Depots:", validDepots);
 
         setDepots(validDepots);
         setLoading(false);
@@ -77,6 +75,9 @@ const Map = () => {
   if (loading) return <p>Loading map...</p>;
   if (error) return <p>Error: {error}</p>;
 
+  console.log("Depots:", depots);
+  console.log("Selected Depot:", selectedDepot);
+
   return (
     <div className="map-wrapper">
       <div className="dropdown-container">
@@ -90,22 +91,20 @@ const Map = () => {
         </select>
       </div>
 
-      <div className="map-container">
+      {/* 🔥 Added inline style for height fix */}
+      <div className="map-container" style={{ height: '500px', width: '100%' }}>
         <MapContainer
           center={
             selectedDepot
               ? [selectedDepot.location.lat, selectedDepot.location.lng]
-              : [28.6139, 77.209]
+              : [28.6139, 77.2090]
           }
           zoom={12}
           style={{ height: "100%", width: "100%" }}
         >
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-
           {selectedDepot && (
-            <MapCenter
-              center={[selectedDepot.location.lat, selectedDepot.location.lng]}
-            />
+            <MapCenter center={[selectedDepot.location.lat, selectedDepot.location.lng]} />
           )}
 
           {depots.map((depot) => (
@@ -117,20 +116,15 @@ const Map = () => {
                 click: () => navigate(`/depot/${depot._id}`),
               }}
             >
-              <Tooltip
-                direction="top"
-                offset={[0, -45]}
-                opacity={1}
-                permanent={false}
-              >
+              <Tooltip direction="top" offset={[0, -45]} opacity={1} permanent={false}>
                 <img
-                  src={depot.image || "https://via.placeholder.com/150"}
+                  src={depot.image || 'https://via.placeholder.com/150'}
                   alt={depot.name}
                   style={{
-                    width: "120px",
-                    height: "120px",
-                    objectFit: "cover",
-                    borderRadius: "8px",
+                    width: '120px',
+                    height: '120px',
+                    objectFit: 'cover',
+                    borderRadius: '8px',
                   }}
                 />
               </Tooltip>
