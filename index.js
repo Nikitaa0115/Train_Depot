@@ -1,33 +1,36 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const Depot = require("./models/DepotSchema.js");
-const Contact = require("./models/ContactSchema.js");
-const sampleData = require("./models/Sample.js");
-require("dotenv").config();
+const Depot = require("./models/DepotSchema.js");       
+const Contact = require("./models/ContactSchema.js");   
+const sampleData = require("./models/Sample.js");       
+require('dotenv').config();
 
 const app = express();
 const PORT = 8080;
 
-const allowedOrigins = ["http://localhost:3000", "http://localhost:5173"];
+// ✅ Allowed origins including deployed frontend
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:5173",
+  "https://train-depots-frontend.onrender.com"  // ✅ Added deployed frontend origin
+];
 
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.header("Access-Control-Allow-Origin", origin);
-  }
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  );
-  next();
-});
+// ✅ Use cors middleware
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: "GET,POST,PUT,DELETE,OPTIONS",
+  allowedHeaders: "Origin, X-Requested-With, Content-Type, Accept, Authorization",
+  credentials: true,
+}));
 
 app.use(express.json());
-
-// const mapURL = "mongodb://127.0.0.1:27017/map";
-// const contactURL = "mongodb://127.0.0.1:27017/contacts";
 
 const depotsURL = process.env.DEPOTS_ATLAS_URL;
 const contactsURL = process.env.CONTACTS_ATLAS_URL;
@@ -44,20 +47,13 @@ const contactsConnection = mongoose.createConnection(contactsURL, {
 
 mapConnection.on("connected", () => {
   console.log(" Connected to map database");
-  // Call insertSampleData AFTER connection is established
   insertSampleData();
 });
 
-contactsConnection.on("connected", () =>
-  console.log("Connected to contacts database")
-);
+contactsConnection.on("connected", () => console.log("Connected to contacts database"));
 
-mapConnection.on("error", (error) =>
-  console.error("Map DB connection error:", error)
-);
-contactsConnection.on("error", (error) =>
-  console.error("Contacts DB connection error:", error)
-);
+mapConnection.on("error", (error) => console.error("Map DB connection error:", error));
+contactsConnection.on("error", (error) => console.error("Contacts DB connection error:", error));
 
 const DepotModel = mapConnection.model("Depot", Depot.schema);
 const ContactModel = contactsConnection.model("Contact", Contact.schema);
@@ -65,10 +61,10 @@ const ContactModel = contactsConnection.model("Contact", Contact.schema);
 const insertSampleData = async () => {
   try {
     const existingData = await DepotModel.countDocuments();
-
+    
     if (existingData === 0) {
       console.log("⚡ Inserting sample data...");
-      await DepotModel.insertMany(sampleData);
+      await DepotModel.insertMany(sampleData);   
       console.log("Sample data inserted successfully!");
     } else {
       console.log("Sample data already exists. Skipping insertion.");
@@ -115,13 +111,11 @@ app.post("/api/contact", async (req, res) => {
       message,
     });
 
-    await newContact.save();
+    await newContact.save();  
     console.log("Message saved:", newContact);
 
-    res.status(201).json({
-      message: "Contact form submitted successfully!",
-      data: newContact,
-    });
+    res.status(201).json({ message: "Contact form submitted successfully!", data: newContact });
+
   } catch (error) {
     console.error("Error saving contact form:", error);
     res.status(500).json({ message: "Failed to submit form", error });
