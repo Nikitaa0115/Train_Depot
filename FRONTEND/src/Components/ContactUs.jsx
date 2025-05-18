@@ -19,7 +19,7 @@ const ContactUs = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post("https://train-depot.onrender.com/api/contacts", formData);
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/contact`, formData);
 
 
 
